@@ -1,5 +1,5 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Col, Row, Container } from 'react-bootstrap';
 import './Register.css'
 
@@ -20,6 +20,16 @@ function Register({ changeUsersList }) {
         setLoginDetails({ ...loginDetails, profilePic: content })
     }
 
+    async function postData(name, password) {
+    const response = 
+         await fetch('http://localhost:5287/api/users/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ "Id": name, "Password": password })});
+            console.log(response.json());
+            return response.json();
+    }
+
     const verify = () => {
         var pass = document.getElementById('pass').value;
         var passAgain = document.getElementById('passAgain').value;
@@ -38,6 +48,7 @@ function Register({ changeUsersList }) {
             alert("The password should contain only letters and numbers and be at least 4 characters")
         } else {
             changeUsersList((usersList) => [...usersList, loginDetails]);
+            postData(userName, pass);
             navigate('/Conversations', { state: { name: nickName, profilePic: loginDetails.profilePic } })
         }
     }
