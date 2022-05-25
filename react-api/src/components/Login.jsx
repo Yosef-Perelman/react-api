@@ -5,6 +5,7 @@ import { Button, Col, Row, Container } from 'react-bootstrap';
 
 function Login({ usersList }) {
     console.log(usersList);
+    console.log(window.location.href);
     const navigate = useNavigate();
 
     const verify = () => {

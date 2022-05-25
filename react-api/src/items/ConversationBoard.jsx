@@ -7,7 +7,7 @@ import symongarfunkel from "./symongarfunkel.jpg";
 import song from "./song.mp3"
 
 
-function ConvBoard({ name, setLastMessage, lastMessageList, index, setLastTime, lastTimeList }) {
+function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, setLastTime, lastTimeList }) {
     let name1 = name + "1";
     let name2 = name + "2";
 
@@ -20,6 +20,15 @@ function ConvBoard({ name, setLastMessage, lastMessageList, index, setLastTime, 
 
     let newText = useRef(null);
 
+    // async function postData(contact, content) {
+    //     const response = 
+    //          await fetch('http://localhost:5287/api/contacts/{contact}/messages', {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'application/json' },
+    //             body: JSON.stringify({ "content": content })});
+    //             console.log(response.json());
+    //             return response.json();
+    //     }
 
     const addMessage = () => {
         if (newText.current.value !== "") {
@@ -40,6 +49,7 @@ function ConvBoard({ name, setLastMessage, lastMessageList, index, setLastTime, 
             }])
             newText.current.value = ""
         }
+        //postData()
         console.log(initMessageList);
     }
 
