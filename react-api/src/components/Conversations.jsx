@@ -8,7 +8,6 @@ import frog1 from "./frog1.jpg";
 import frog2 from "./frog2.jpg";
 import anon from "./anon.png";
 
-
 function Conversations() {
 
     const location = useLocation();
@@ -47,10 +46,9 @@ function Conversations() {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
     });
     const listBoards = initialNames.map((now, key) => {
-        return <ConvBoard name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
+        return <ConvBoard userName = {username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
-
 
     const addContact = () => {
         let newContact = prompt("New contact name:");
