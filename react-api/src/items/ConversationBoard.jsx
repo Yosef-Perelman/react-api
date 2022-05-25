@@ -11,19 +11,6 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     let name1 = name + "1";
     let name2 = name + "2";
 
-    var hardCodedMessages = [];
-    if(name === "Mom") {
-        hardCodedMessages = [
-        { text: "blah", key: 0, me_or_friend: "me", type: "image", thisTime: "15:01:48", imgSrc: symongarfunkel },
-        { text: "blah", key: 0, me_or_friend: "me", type: "record", thisTime: "15:10:23", imgSrc: song },
-        { text: "blah", key: 0, me_or_friend: "me", type: "video", thisTime: "15:13:16", imgSrc: kmp4 },
-        { text: "Hello darkness", key: 0, me_or_friend: "me", type: "text", thisTime: "15:14:13" },
-        { text: "my old freind", key: 0, me_or_friend: "me", type: "text", thisTime: "15:14:15" }
-    ]}
-
-    const hardCodedMessagesReturn = hardCodedMessages.map((now, key) => {
-        return <Message text={now.text} key={key} type={now.type} imgSrc={now.imgSrc} me_or_friend={now.me_or_friend} thisTime={now.thisTime} />
-    })
 
     const [initMessageList, setMessageList] = useState([])
 
@@ -139,7 +126,6 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
         <Tab.Pane eventKey={name}>
             <Card className='card'>
                 <extraWarper className="extra">
-                    {hardCodedMessagesReturn}
                     {messageList}
                 </extraWarper>
             </Card>
@@ -149,19 +135,19 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
                 />
 
                 <DropdownButton title="upload" variant="outline-secondary">
-                    <Button style={{"border": "solid", "border-radius": "5px", "border-color": "black"}}><label for={name2}>
+                    <Button style={{ "border": "solid", "border-radius": "5px", "border-color": "black" }}><label for={name2}>
                         audio
                         <input type={"file"} id={name2} hidden={true}
                             onChange={(e) => uploadRecord(e)} />
                     </label></Button>
-                    <Button style={{"border": "solid", "border-radius": "5px", "border-color": "black"}}>
+                    <Button style={{ "border": "solid", "border-radius": "5px", "border-color": "black" }}>
                         <label for={name}>
                             image
                             <input type={"file"} id={name} hidden={true}
                                 onChange={(e) => uploadImage(e)} />
                         </label>
                     </Button>
-                    <Button style={{"border": "solid", "border-radius": "5px", "border-color": "black"}}>
+                    <Button style={{ "border": "solid", "border-radius": "5px", "border-color": "black" }}>
                         <label for={name1}>
                             video
                             <input type={"file"} id={name1} hidden={true}

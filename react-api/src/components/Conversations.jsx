@@ -1,9 +1,9 @@
-import {  Col, Row, Tab, Nav } from 'react-bootstrap';
+import { Col, Row, Tab, Nav } from 'react-bootstrap';
 import "./Conversations.css"
 import NaviMe from '../items/NaviMe';
 import ConvBoard from '../items/ConversationBoard';
 import { useLocation } from 'react-router-dom';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import frog1 from "./frog1.jpg";
 import frog2 from "./frog2.jpg";
 import anon from "./anon.png";
@@ -23,24 +23,30 @@ function Conversations() {
         profilePic = anon;
     }
 
-    var initialNamesArr = [];
-    var initiNamesArr = [];
-    var lastMessageListArr = [];
-    var lastTimeListArr = [];
+    var lastMessageListArr = ["my old freind", "", "", "", ""];
+    var lastTimeListArr = lastTimeListArr = ["15:14:15", "", "", "", ""];
 
-    if (username === "Ariel") {
-        initialNamesArr = [{ name: "Mom" }, { name: "Dad" }, { name: "Jo" }, { name: "Ann" }, { name: "Ben" }];
-        initiNamesArr = [{ name: "Mom" }, { name: "Dad" }, { name: "Jo" }, { name: "Ann" }, { name: "Ben" }];
-        lastMessageListArr = ["my old freind", "", "", "", ""];
-        lastTimeListArr = ["15:14:15", "", "", "", ""];
-    }
+    var result = [];
 
-    const [initialNames, setinitialNames] = useState(initialNamesArr);
-    const [initiNames, setInitiNames] = useState(initiNamesArr);
+    const [initialNames, setinitialNames] = useState([]);
+    const [initiNames, setInitiNames] = useState([]);
     const [lastMessageList, setLastMessageList] = useState(lastMessageListArr);
     const [lastTimeList, setLastTimeList] = useState(lastTimeListArr);
 
-    console.log(initialNames);
+
+    useEffect(async () => {
+        const resp = await fetch('http://localhost:5287/api/contacts/');
+        const data = await resp.json();
+
+
+        for (var i in data) {
+            const obj = { "name": data[i].name };
+            result.push(obj);
+        }
+
+        setinitialNames(result);
+        setInitiNames(result);
+    }, []);
 
     const listNames = initiNames.map((now, key) => {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
@@ -50,10 +56,20 @@ function Conversations() {
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
+    async function postNewContact(newContact) {
+        const response =
+            await fetch('http://localhost:5287/api/contacts/' + username, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "", user })
+            });
+        return response.json();
+    }
+
     const addContact = () => {
         let newContact = prompt("New contact name:");
         if (newContact !== "" && newContact != null) {
-            console.log(newContact);
+            postNewContact(newContact);
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
