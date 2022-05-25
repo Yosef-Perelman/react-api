@@ -24,7 +24,7 @@ function Conversations() {
         profilePic = anon;
     }
 
-    var lastMessageListArr = ["my old freind", "", "", "", ""];
+    var lastMessageListArr = ["my old friend", "", "", "", ""];
     var lastTimeListArr = lastTimeListArr = ["15:14:15", "", "", "", ""];
 
     var result = [];
@@ -34,17 +34,16 @@ function Conversations() {
     const [lastMessageList, setLastMessageList] = useState(lastMessageListArr);
     const [lastTimeList, setLastTimeList] = useState(lastTimeListArr);
 
-
+    //when we connect, the server gives us 
     useEffect(async () => {
         const resp = await fetch('http://localhost:5287/api/contacts/');
         const data = await resp.json();
-
-
         for (var i in data) {
-            const obj = { "name": data[i].name };
-            result.push(obj);
+            if (data[i].userName === username) {
+                const obj = { "name": data[i].name };
+                result.push(obj);
+            }
         }
-
         setinitialNames(result);
         setInitiNames(result);
     }, []);
@@ -57,12 +56,21 @@ function Conversations() {
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
+    async function invitation(username, contact, server) {
+        const response =
+            await fetch('http://localhost:5287/api/invitations/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "From": username, "To": contact, "Server": "" })
+            });
+    }
+
     async function postNewContact(newContact) {
         const response =
             await fetch('http://localhost:5287/api/contacts/' + username, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "", user })
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "Server": "" })
             });
         return response.json();
     }
@@ -71,6 +79,7 @@ function Conversations() {
         let newContact = prompt("New contact name:");
         if (newContact !== "" && newContact != null) {
             postNewContact(newContact);
+            invitation(username, newContact, "");
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
