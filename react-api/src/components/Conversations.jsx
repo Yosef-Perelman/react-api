@@ -27,13 +27,7 @@ function Conversations() {
     var lastMessageListArr = ["my old freind", "", "", "", ""];
     var lastTimeListArr = lastTimeListArr = ["15:14:15", "", "", "", ""];
 
-
-
-
     var result = [];
-
-
-
 
     const [initialNames, setinitialNames] = useState([]);
     const [initiNames, setInitiNames] = useState([]);
@@ -51,19 +45,9 @@ function Conversations() {
             result.push(obj);
         }
 
-        console.log(result);
-
         setinitialNames(result);
         setInitiNames(result);
     }, []);
-
-
-
-
-
-
-
-
 
     const listNames = initiNames.map((now, key) => {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
@@ -73,11 +57,20 @@ function Conversations() {
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
+    async function postNewContact(newContact) {
+        const response =
+            await fetch('http://localhost:5287/api/contacts/' + username, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "", user })
+            });
+        return response.json();
+    }
 
     const addContact = () => {
         let newContact = prompt("New contact name:");
         if (newContact !== "" && newContact != null) {
-            console.log(newContact);
+            postNewContact(newContact);
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
