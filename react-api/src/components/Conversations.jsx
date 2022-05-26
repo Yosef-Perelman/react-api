@@ -12,7 +12,7 @@ function Conversations() {
 
     const location = useLocation();
     const username = location.state.name;
-    let profilePic = location.state.profilePic;
+    let profilePic = null;
     if (username === "Ariel") {
         profilePic = frog2;
     }
@@ -47,6 +47,8 @@ function Conversations() {
         setInitiNames(result);
     }, []);
 
+
+
     const listNames = initiNames.map((now, key) => {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
     });
@@ -63,6 +65,8 @@ function Conversations() {
                 body: JSON.stringify({ "From": username, "To": contact, "Server": "" })
             });
     }
+
+
 
     async function postNewContact(newContact) {
         const response =
