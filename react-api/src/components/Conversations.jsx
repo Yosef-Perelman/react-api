@@ -39,7 +39,7 @@ function Conversations() {
         const data = await resp.json();
         for (var i in data) {
             if (data[i].userName === username) {
-                const obj = { "name": data[i].name };
+                const obj = { "name": data[i].id };
                 result.push(obj);
             }
         }
@@ -80,7 +80,14 @@ function Conversations() {
 
     const addContact = () => {
         let newContact = prompt("New contact name:");
-        if (newContact !== "" && newContact != null) {
+        var isOK = true;
+        for (var i in initiNames) {
+            if (newContact === initiNames[i].name) {
+                alert("already exists")
+                isOK = false;
+            }
+        }
+        if (newContact !== "" && newContact != null && isOK) {
             postNewContact(newContact);
             invitation(username, newContact, "");
             setinitialNames([...initialNames, {
