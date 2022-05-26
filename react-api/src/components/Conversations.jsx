@@ -51,7 +51,7 @@ function Conversations() {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
     });
     const listBoards = initialNames.map((now, key) => {
-        return <ConvBoard userName = {username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
+        return <ConvBoard userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
