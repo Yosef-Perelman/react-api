@@ -46,16 +46,16 @@ function Conversations() {
     const username = location.state.name;
     let profilePic = location.state.profilePic;
     if (username === "Ariel") {
-        profilePic = frog1;
+        profilePic = frog2;
     }
     if (username === "Yosef") {
-        profilePic = frog2;
+        profilePic = frog1;
     }
     if (profilePic === "") {
         profilePic = anon;
     }
 
-    var lastMessageListArr = ["my old freind", "", "", "", ""];
+    var lastMessageListArr = ["my old friend", "", "", "", ""];
     var lastTimeListArr = lastTimeListArr = ["15:14:15", "", "", "", ""];
 
     var result = [];
@@ -65,17 +65,16 @@ function Conversations() {
     const [lastMessageList, setLastMessageList] = useState(lastMessageListArr);
     const [lastTimeList, setLastTimeList] = useState(lastTimeListArr);
 
-
+    //when we connect, the server gives us 
     useEffect(async () => {
         const resp = await fetch('http://localhost:5287/api/contacts/');
         const data = await resp.json();
-
-
         for (var i in data) {
-            const obj = { "name": data[i].name };
-            result.push(obj);
+            if (data[i].userName === username) {
+                const obj = { "name": data[i].name };
+                result.push(obj);
+            }
         }
-
         setinitialNames(result);
         setInitiNames(result);
         connectToServer();
@@ -85,16 +84,25 @@ function Conversations() {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
     });
     const listBoards = initialNames.map((now, key) => {
-        return <ConvBoard userName = {username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
+        return <ConvBoard userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
+
+    async function invitation(username, contact, server) {
+        const response =
+            await fetch('http://localhost:5287/api/invitations/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "From": username, "To": contact, "Server": "" })
+            });
+    }
 
     async function postNewContact(newContact) {
         const response =
             await fetch('http://localhost:5287/api/contacts/' + username, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "" })
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "Server": "" })
             });
         return response.json();
     }
@@ -103,6 +111,7 @@ function Conversations() {
         let newContact = prompt("New contact name:");
         if (newContact !== "" && newContact != null) {
             postNewContact(newContact);
+            invitation(username, newContact, "");
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
