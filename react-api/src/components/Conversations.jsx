@@ -14,10 +14,10 @@ function Conversations() {
     const username = location.state.name;
     let profilePic = location.state.profilePic;
     if (username === "Ariel") {
-        profilePic = frog1;
+        profilePic = frog2;
     }
     if (username === "Yosef") {
-        profilePic = frog2;
+        profilePic = frog1;
     }
     if (profilePic === "") {
         profilePic = anon;
