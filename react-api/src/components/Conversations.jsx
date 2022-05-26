@@ -61,7 +61,7 @@ function Conversations() {
             await fetch('http://localhost:5287/api/contacts/' + username, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "", user })
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "server": "" })
             });
         return response.json();
     }
@@ -85,7 +85,9 @@ function Conversations() {
         <>
             <Tab.Container id="everything">
                 <Row>
+                <p style={{"margin": "0px 10px"}}> To rate the app tap <a href="http://localhost:5287/" target="_blank">here</a> </p>
                     <Col sm={3}>
+                        
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item className='chatMenu'>
                                 <span class="d-block p-2 bg-primary text-white">

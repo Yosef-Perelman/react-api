@@ -20,15 +20,15 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
 
     let newText = useRef(null);
 
-    // async function postData(contact, content) {
-    //     const response = 
-    //          await fetch('http://localhost:5287/api/contacts/{contact}/messages', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ "content": content })});
-    //             console.log(response.json());
-    //             return response.json();
-    //     }
+    async function postData(contact, content) {
+        const response = 
+             await fetch('http://localhost:5287/api/contacts/'+contact+'/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "content": content })});
+                console.log(response.json());
+                return response.json();
+        }
 
     const addMessage = () => {
         if (newText.current.value !== "") {
@@ -47,9 +47,9 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
                 type: "text",
                 thisTime: new Date().toLocaleTimeString()
             }])
+            postData(name, newText.current.value);
             newText.current.value = ""
         }
-        //postData()
         console.log(initMessageList);
     }
 
