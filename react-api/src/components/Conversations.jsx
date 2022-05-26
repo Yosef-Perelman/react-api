@@ -7,8 +7,40 @@ import { useEffect, useState } from 'react';
 import frog1 from "./frog1.jpg";
 import frog2 from "./frog2.jpg";
 import anon from "./anon.png";
+import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 function Conversations() {
+    const[connection, SetConnection] = useState();
+
+    
+    const connectToServer = async () => {
+        try{
+            const connection = new HubConnectionBuilder().
+            withUrl('http://localhost:5287/chatHub').
+            configureLogging(LogLevel.Information).build();
+
+            connection.on("NewUser", (mess) =>
+                {
+                    console.log(mess);
+                }
+            )
+            connection.on("ReciveContact", (mess) =>
+                {
+                    console.log(mess);
+                }
+            )
+            connection.on("ReceiveMessage", (mess) =>
+                {
+                    console.log(mess);
+                }
+            )
+            await connection.start();
+            await connection.invoke("Join");
+            SetConnection(connection);
+        } catch (e) {
+            console.log(e);
+        }
+    }
 
     const location = useLocation();
     const username = location.state.name;
@@ -46,6 +78,7 @@ function Conversations() {
 
         setinitialNames(result);
         setInitiNames(result);
+        connectToServer();
     }, []);
 
     const listNames = initiNames.map((now, key) => {
@@ -66,7 +99,7 @@ function Conversations() {
         return response.json();
     }
 
-    const addContact = () => {
+    const addContact = async () => {
         let newContact = prompt("New contact name:");
         if (newContact !== "" && newContact != null) {
             postNewContact(newContact);
@@ -78,12 +111,13 @@ function Conversations() {
                 name: newContact,
                 key: initialNames.length
             }])
+            await connection.invoke("AddedContact");
         }
     }
 
     return (
         <>
-            <Tab.Container id="everything">
+            <Tab.Container id="everything" >
                 <Row>
                 <p style={{"margin": "0px 10px"}}> To rate the app tap <a href="http://localhost:5287/" target="_blank">here</a> </p>
                     <Col sm={3}>
