@@ -10,11 +10,15 @@ function Login() {
 
     const navigate = useNavigate();
 
-    useEffect(async () => {
+    const getResponse = async () => {
         const resp = await fetch('http://localhost:5287/api/Users');
         const data = await resp.json();
         setUsersList(data);
-    }, []);
+    };
+
+    useEffect(() => { 
+        getResponse();
+      });
 
     const verify = () => {
         var username = document.getElementById('username').value;

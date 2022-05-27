@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Button, Col, Row, Container } from 'react-bootstrap';
 import './Register.css'
 
-function Register({ changeUsersList }) {
+function Register() {
 
     const [loginDetails, setLoginDetails] = useState({
         userName: "",
@@ -22,11 +22,15 @@ function Register({ changeUsersList }) {
 
     const [usersList, setUsersList] = useState([]);
 
-    useEffect(async () => {
+    const getResponse = async () => {
         const resp = await fetch('http://localhost:5287/api/Users');
         const data = await resp.json();
         setUsersList(data);
-    }, []);
+    };
+
+    useEffect(() => { 
+        getResponse();
+      });
 
     async function postData(name, password) {
         const response =
@@ -65,7 +69,6 @@ function Register({ changeUsersList }) {
         } else if (!(/^[A-Za-z0-9]*$/.test(pass)) || pass.length < 4) {
             alert("The password should contain only letters and numbers and be at least 4 characters")
         } else {
-            changeUsersList((usersList) => [...usersList, loginDetails]);
             postData(userName, pass);
             navigate('/Conversations', { state: { name: nickName, profilePic: loginDetails.profilePic } })
         }
