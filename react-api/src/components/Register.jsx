@@ -20,14 +20,23 @@ function Register({ changeUsersList }) {
         setLoginDetails({ ...loginDetails, profilePic: content })
     }
 
+    const [usersList, setUsersList] = useState([]);
+
+    useEffect(async () => {
+        const resp = await fetch('http://localhost:5287/api/Users');
+        const data = await resp.json();
+        setUsersList(data);
+    }, []);
+
     async function postData(name, password) {
-    const response = 
-         await fetch('http://localhost:5287/api/users/register', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "Id": name, "Password": password })});
-            console.log(response.json());
-            return response.json();
+        const response =
+            await fetch('http://localhost:5287/api/users/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "Id": name, "Password": password })
+            });
+        console.log(response.json());
+        return response.json();
     }
 
     const verify = () => {
@@ -36,7 +45,16 @@ function Register({ changeUsersList }) {
         var userName = document.getElementById('userName').value;
         var nickName = document.getElementById('nickName').value;
 
-        if (userName === "") {
+        var nameTaken = false;
+        for (var i in usersList) {
+            if (usersList[i].id === userName) {
+                console.log(usersList[i].id);
+                nameTaken = true;
+            }
+        }
+        if (nameTaken === true) {
+            alert("name is taken");
+        } else if (userName === "") {
             alert("you have to enter a username");
         } else if (pass !== passAgain) {
             alert("passwords do not match");
@@ -56,7 +74,7 @@ function Register({ changeUsersList }) {
     return (
         <div class="form-horizontal">
             <Container class="col">
-            <h1 className="display-1"><strong><em>lets chat!</em></strong></h1>
+                <h1 className="display-1"><strong><em>lets chat!</em></strong></h1>
                 <form>
                     <Row>
                         <Col>Username:</Col>
@@ -84,7 +102,7 @@ function Register({ changeUsersList }) {
                         <Col>Profile picture:</Col>
                         <Col>
 
-                            <label for="uploadImg" class="btn btn-outline-secondary" style={{"background-color": "aliceblue"}}>
+                            <label for="uploadImg" class="btn btn-outline-secondary" style={{ "background-color": "aliceblue" }}>
                                 upload image
                                 <input type={"file"} id="uploadImg" hidden={true}
                                     onChange={(e) => uploadImage(e)} />

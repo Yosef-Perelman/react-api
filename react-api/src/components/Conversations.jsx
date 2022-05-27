@@ -60,7 +60,7 @@ function Conversations() {
 
     const location = useLocation();
     const username = location.state.name;
-    let profilePic = location.state.profilePic;
+    let profilePic = null;
     if (username === "Ariel") {
         profilePic = frog2;
     }
@@ -79,7 +79,7 @@ function Conversations() {
         const data = await resp.json();
         for (var i in data) {
             if (data[i].userName === username) {
-                const obj = { "name": data[i].name };
+                const obj = { "name": data[i].id };
                 result.push(obj);
             }
         }
@@ -87,6 +87,8 @@ function Conversations() {
         setInitiNames(result);
         connectToServer();
     }, []);
+
+
 
     const listNames = initiNames.map((now, key) => {
         return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
@@ -117,10 +119,16 @@ function Conversations() {
 
     const addContact = async () => {
         let newContact = prompt("New contact name:");
-        let newContactServer = prompt("Enter the contact server:");
-        if (newContact !== "" && newContact != null) {
-            postNewContact(newContact, newContactServer);
-            invitation(username, newContact);
+        var isOK = true;
+        for (var i in initiNames) {
+            if (newContact === initiNames[i].name) {
+                alert("already exists")
+                isOK = false;
+            }
+        }
+        if (newContact !== "" && newContact != null && isOK) {
+            postNewContact(newContact);
+            invitation(username, newContact, "");
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length

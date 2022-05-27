@@ -1,26 +1,35 @@
 import "./Login.css"
 import { Link, useNavigate } from 'react-router-dom';
 import { Button, Col, Row, Container } from 'react-bootstrap';
+import { useState, useEffect } from "react";
 
 
-function Login({ usersList }) {
-    console.log(usersList);
-    console.log(window.location.href);
+function Login() {
+
+    const [usersList, setUsersList] = useState([]);
+
     const navigate = useNavigate();
+
+    useEffect(async () => {
+        const resp = await fetch('http://localhost:5287/api/Users');
+        const data = await resp.json();
+        setUsersList(data);
+    }, []);
 
     const verify = () => {
         var username = document.getElementById('username').value;
         var password = document.getElementById('password').value;
+
         var is_true = false;
-        var i = 0;
-        for (; i < usersList.length; i++) {
-            if (username === usersList[i].userName && password === usersList[i].password) {
+
+        for (var i in usersList) {
+            if (usersList[i].id === username && usersList[i].password === password) {
                 is_true = true;
-                break;
             }
         }
+
         if (is_true) {
-            navigate('/Conversations', {state: { name: usersList[i].nickName, profilePic: usersList[i].profilePic, newUser:false } });
+            navigate('/Conversations', { state: { name: username, newUser: false } });
         }
         else {
             alert("Something went wrong, please try again");
