@@ -30,6 +30,19 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     //             return response.json();
     //     }
 
+    // useEffect(async () => {
+    //     const resp = await fetch('http://localhost:5287/api/contacts/');
+    //     const data = await resp.json();
+    //     for (var i in data) {
+    //         if (data[i].userName === username) {
+    //             const obj = { "name": data[i].id };
+    //             result.push(obj);
+    //         }
+    //     }
+    //     setinitialNames(result);
+    //     setInitiNames(result);
+    // }, []);
+
     const addMessage = () => {
         if (newText.current.value !== "") {
             let newArr = [...lastMessageList];
