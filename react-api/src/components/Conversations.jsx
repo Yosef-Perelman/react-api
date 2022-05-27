@@ -45,11 +45,6 @@ function Conversations() {
                 console.log(initialNames);
             }
             )
-            connection.on("ReceiveMessage", (mess) =>
-                {
-                    console.log(mess);
-                }
-            )
             await connection.start();
             await connection.invoke("Join");
             SetConnection(connection);
@@ -96,7 +91,7 @@ function Conversations() {
         return <NaviMe username={username} friend={now.name} key={key} />
     });
     const listBoards = initialNames.map((now, key) => {
-        return <ConvBoard userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
+        return <ConvBoard connection={connection} userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
