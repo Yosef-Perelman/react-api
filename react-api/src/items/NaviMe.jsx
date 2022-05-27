@@ -11,8 +11,11 @@ function NaviMe({ username, friend }) {
     useEffect(async () => {
         const resp = await fetch('http://localhost:5287/api/contacts/' + username + '/' + friend + '/messages');
         const data = await resp.json();
-        setLastTime(data[data.length - 1].created)
-        setLastMessage(data[data.length - 1].content);
+        setLastTime(data[data.length - 1].created);
+        if (data[data.length - 1].content.length > 20) {
+            setLastMessage(data[data.length - 1].content.substr(1, 17) + "...");
+        } else
+            setLastMessage(data[data.length - 1].content);
     }, []);
 
     return (
