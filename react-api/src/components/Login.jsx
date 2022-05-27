@@ -29,7 +29,7 @@ function Login() {
         }
 
         if (is_true) {
-            navigate('/Conversations', { state: { name: username, newUser: false } });
+            navigate('/Conversations', { state: { name: username } });
         }
         else {
             alert("Something went wrong, please try again");

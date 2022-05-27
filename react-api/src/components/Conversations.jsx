@@ -11,8 +11,8 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 function Conversations() {
     const[connection, SetConnection] = useState();
-    const [initialNames, setinitialNames] = useState(['avi', 'eli']);
-    const [initiNames, setInitiNames] = useState(['avi', 'eli']);
+    const [initialNames, setinitialNames] = useState([]);
+    const [initiNames, setInitiNames] = useState([]);
     const [lastMessageList, setLastMessageList] = useState([]);
     const [lastTimeList, setLastTimeList] = useState([]);
 
@@ -83,6 +83,7 @@ function Conversations() {
                 result.push(obj);
             }
         }
+        console.log(result);
         setinitialNames(result);
         setInitiNames(result);
         connectToServer();
