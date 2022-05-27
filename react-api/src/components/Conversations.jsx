@@ -11,8 +11,11 @@ import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 function Conversations() {
     const[connection, SetConnection] = useState();
+    const [initialNames, setinitialNames] = useState(['avi', 'eli']);
+    const [initiNames, setInitiNames] = useState(['avi', 'eli']);
+    const [lastMessageList, setLastMessageList] = useState([]);
+    const [lastTimeList, setLastTimeList] = useState([]);
 
-    
     const connectToServer = async () => {
         try{
             const connection = new HubConnectionBuilder().
@@ -24,10 +27,23 @@ function Conversations() {
                     console.log(mess);
                 }
             )
-            connection.on("ReciveContact", (mess) =>
-                {
-                    console.log(mess);
+            connection.on("ReciveContact", async () => {
+                var saveData;
+                console.log("received contact");
+                await fetch('http://localhost:5287/api/contacts').then(response => response.json())
+                    .then(data => saveData = data);
+                var names = [];
+                for (var i in saveData) {
+                    if (saveData[i].userName === username) {
+                        const obj = { "name": saveData[i].name };
+                        names.push(obj);
+                    }
                 }
+                console.log(names);
+                setinitialNames(names);
+                setInitiNames(names);
+                console.log(initialNames);
+            }
             )
             connection.on("ReceiveMessage", (mess) =>
                 {
@@ -55,15 +71,7 @@ function Conversations() {
         profilePic = anon;
     }
 
-    var lastMessageListArr = ["my old friend", "", "", "", ""];
-    var lastTimeListArr = lastTimeListArr = ["15:14:15", "", "", "", ""];
-
     var result = [];
-
-    const [initialNames, setinitialNames] = useState([]);
-    const [initiNames, setInitiNames] = useState([]);
-    const [lastMessageList, setLastMessageList] = useState(lastMessageListArr);
-    const [lastTimeList, setLastTimeList] = useState(lastTimeListArr);
 
     //when we connect, the server gives us 
     useEffect(async () => {
@@ -88,30 +96,31 @@ function Conversations() {
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
     });
 
-    async function invitation(username, contact, server) {
+    async function invitation(username, contact) {
         const response =
-            await fetch('http://localhost:5287/api/invitations/', {
+            await fetch('http://localhost:5287/api/invitations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "From": username, "To": contact, "Server": "" })
+                body: JSON.stringify({ "From": username, "To": contact, "Server": 'http://localhost:5287' })
             });
     }
 
-    async function postNewContact(newContact) {
+    async function postNewContact(newContact, server) {
         const response =
             await fetch('http://localhost:5287/api/contacts/' + username, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "Id": newContact, "name": newContact, "Server": "" })
+                body: JSON.stringify({ "Id": newContact, "name": newContact, "Server": server })
             });
         return response.json();
     }
 
     const addContact = async () => {
         let newContact = prompt("New contact name:");
+        let newContactServer = prompt("Enter the contact server:");
         if (newContact !== "" && newContact != null) {
-            postNewContact(newContact);
-            invitation(username, newContact, "");
+            postNewContact(newContact, newContactServer);
+            invitation(username, newContact);
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
