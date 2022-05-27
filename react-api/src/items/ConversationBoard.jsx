@@ -1,6 +1,6 @@
 import { Button, Card, Tab, InputGroup, FormControl, DropdownButton } from 'react-bootstrap';
 import Message from './Message';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import "./conversationBoard.css";
 import kmp4 from "./k.mp4";
 import symongarfunkel from "./symongarfunkel.jpg";
@@ -14,9 +14,7 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
 
     const [initMessageList, setMessageList] = useState([])
 
-    const messageList = initMessageList.map((now, key) => {
-        return <Message text={now.text} key={key} type={now.type} imgSrc={now.imgSrc} me_or_friend={now.me_or_friend} thisTime={now.thisTime} />
-    });
+
 
     let newText = useRef(null);
 
@@ -30,20 +28,33 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     //             return response.json();
     //     }
 
-    // useEffect(async () => {
-    //     const resp = await fetch('http://localhost:5287/api/contacts/');
-    //     const data = await resp.json();
-    //     for (var i in data) {
-    //         if (data[i].userName === username) {
-    //             const obj = { "name": data[i].id };
-    //             result.push(obj);
-    //         }
-    //     }
-    //     setinitialNames(result);
-    //     setInitiNames(result);
-    // }, []);
+    var result = [];
+    var is_me;
+    useEffect(async () => {
+        const resp = await fetch('http://localhost:5287/api/contacts/' + userName + '/' + name + '/messages');
+        const data = await resp.json();
+
+        for (var i in data) {
+            if (data[i].sent === true) {
+                is_me = "me";
+            } else {
+                is_me = "friend"
+            }
+            const obj = { "text": data[i].content, "me_or_friend": is_me, "type": "text", "thisTime": data[i].created };
+            console.log(obj);
+            result.push(obj);
+        }
+        console.log(result);
+        setMessageList(result);
+    }, []);
+
+
+    const messageList = initMessageList.map((now, key) => {
+        return <Message text={now.text} key={key} type={now.type} imgSrc={now.imgSrc} me_or_friend={now.me_or_friend} thisTime={now.thisTime} />
+    });
 
     const addMessage = () => {
+        console.log(messageList);
         if (newText.current.value !== "") {
             let newArr = [...lastMessageList];
             newArr[index] = newText.current.value
