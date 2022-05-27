@@ -85,7 +85,6 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
                 type: "text",
                 thisTime: new Date().toLocaleTimeString()
             }])
-            postData(name, newText.current.value);
             newText.current.value = ""
         }
         console.log(initMessageList);
