@@ -119,6 +119,7 @@ function Conversations() {
 
     const addContact = async () => {
         let newContact = prompt("New contact name:");
+        let newContactServer = prompt("New contact server:");
         var isOK = true;
         for (var i in initiNames) {
             if (newContact === initiNames[i].name) {
@@ -127,8 +128,8 @@ function Conversations() {
             }
         }
         if (newContact !== "" && newContact != null && isOK) {
-            postNewContact(newContact);
-            invitation(username, newContact, "");
+            postNewContact(newContact, newContactServer);
+            invitation(username, newContact, 'http://localhost:5287');
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length
