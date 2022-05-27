@@ -30,8 +30,8 @@ function Conversations() {
 
     const [initialNames, setinitialNames] = useState([]);
     const [initiNames, setInitiNames] = useState([]);
-    const [lastMessageList, setLastMessageList] = useState(lastMessageListArr);
-    const [lastTimeList, setLastTimeList] = useState(lastTimeListArr);
+    const [lastMessageList, setLastMessageList] = useState([]);
+    const [lastTimeList, setLastTimeList] = useState([]);
 
     //when we connect, the server gives us 
     useEffect(async () => {
@@ -50,7 +50,7 @@ function Conversations() {
 
 
     const listNames = initiNames.map((now, key) => {
-        return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
+        return <NaviMe username={username} friend={now.name} key={key} />
     });
     const listBoards = initialNames.map((now, key) => {
         return <ConvBoard userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}

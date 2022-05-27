@@ -12,8 +12,9 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     let name2 = name + "2";
 
 
-    const [initMessageList, setMessageList] = useState([])
 
+    const [initMessageList, setMessageList] = useState([]);
+    const [lastMessage, setLastMessage1] = useState();
 
 
     let newText = useRef(null);
@@ -55,6 +56,7 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
             console.log(obj);
             result.push(obj);
         }
+        setLastMessage1(data[data.length - 1].content);
         setMessageList(result);
     }, []);
 
