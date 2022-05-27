@@ -18,15 +18,26 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
 
     let newText = useRef(null);
 
-    // async function postData(contact, content) {
-    //     const response = 
-    //          await fetch('http://localhost:5287/api/contacts/{contact}/messages', {
-    //             method: 'POST',
-    //             headers: { 'Content-Type': 'application/json' },
-    //             body: JSON.stringify({ "content": content })});
-    //             console.log(response.json());
-    //             return response.json();
-    //     }
+    async function postToServer(sender, reciver, content) {
+        const response =
+            await fetch('http://localhost:5287/api/contacts/' + sender + '/' + reciver + '/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "content": content })
+            });
+
+    }
+
+    async function postToFriendServer(sender, reciver, content) {
+        const response =
+            await fetch('http://localhost:5287/api/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "From": sender, "To": reciver, "Content": content })
+            });
+
+    }
+
 
     var result = [];
     var is_me;
@@ -44,7 +55,6 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
             console.log(obj);
             result.push(obj);
         }
-        console.log(result);
         setMessageList(result);
     }, []);
 
@@ -54,8 +64,10 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     });
 
     const addMessage = () => {
-        console.log(messageList);
+        var content = newText.current.value;
         if (newText.current.value !== "") {
+            postToServer(userName, name, content);
+            postToFriendServer(userName, name, content);
             let newArr = [...lastMessageList];
             newArr[index] = newText.current.value
             setLastMessage(newArr);
