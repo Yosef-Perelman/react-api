@@ -1,6 +1,6 @@
 import { Button, Card, Tab, InputGroup, FormControl, DropdownButton } from 'react-bootstrap';
 import Message from './Message';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import "./conversationBoard.css";
 import kmp4 from "./k.mp4";
 import symongarfunkel from "./symongarfunkel.jpg";
@@ -12,26 +12,64 @@ function ConvBoard({ userName, name, setLastMessage, lastMessageList, index, set
     let name2 = name + "2";
 
 
-    const [initMessageList, setMessageList] = useState([])
+
+    const [initMessageList, setMessageList] = useState([]);
+    const [lastMessage, setLastMessage1] = useState();
+
+
+    let newText = useRef(null);
+
+    async function postToServer(sender, reciver, content) {
+        const response =
+            await fetch('http://localhost:5287/api/contacts/' + sender + '/' + reciver + '/messages', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "content": content })
+            });
+
+    }
+
+    async function postToFriendServer(sender, reciver, content) {
+        const response =
+            await fetch('http://localhost:5287/api/transfer', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ "From": sender, "To": reciver, "Content": content })
+            });
+
+    }
+
+
+    var result = [];
+    var is_me;
+    useEffect(async () => {
+        const resp = await fetch('http://localhost:5287/api/contacts/' + userName + '/' + name + '/messages');
+        const data = await resp.json();
+
+        for (var i in data) {
+            if (data[i].sent === true) {
+                is_me = "me";
+            } else {
+                is_me = "friend"
+            }
+            const obj = { "text": data[i].content, "me_or_friend": is_me, "type": "text", "thisTime": data[i].created };
+            console.log(obj);
+            result.push(obj);
+        }
+        setLastMessage1(data[data.length - 1].content);
+        setMessageList(result);
+    }, []);
+
 
     const messageList = initMessageList.map((now, key) => {
         return <Message text={now.text} key={key} type={now.type} imgSrc={now.imgSrc} me_or_friend={now.me_or_friend} thisTime={now.thisTime} />
     });
 
-    let newText = useRef(null);
-
-    async function postData(contact, content) {
-        const response = 
-             await fetch('http://localhost:5287/api/contacts/'+contact+'/messages', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "content": content })});
-                console.log(response.json());
-                return response.json();
-        }
-
     const addMessage = () => {
+        var content = newText.current.value;
         if (newText.current.value !== "") {
+            postToServer(userName, name, content);
+            postToFriendServer(userName, name, content);
             let newArr = [...lastMessageList];
             newArr[index] = newText.current.value
             setLastMessage(newArr);

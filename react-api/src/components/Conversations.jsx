@@ -93,7 +93,7 @@ function Conversations() {
 
 
     const listNames = initiNames.map((now, key) => {
-        return <NaviMe name={now.name} key={key} lastMessage={lastMessageList[key]} lastTime={lastTimeList[key]} />
+        return <NaviMe username={username} friend={now.name} key={key} />
     });
     const listBoards = initialNames.map((now, key) => {
         return <ConvBoard userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
