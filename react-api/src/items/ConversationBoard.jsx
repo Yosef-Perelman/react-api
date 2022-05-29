@@ -2,19 +2,33 @@ import { Button, Card, Tab, InputGroup, FormControl, DropdownButton } from 'reac
 import Message from './Message';
 import { useRef, useState, useEffect } from 'react';
 import "./conversationBoard.css";
-import kmp4 from "./k.mp4";
-import symongarfunkel from "./symongarfunkel.jpg";
-import song from "./song.mp3"
 
 
-function ConvBoard({ connection, userName, name, setLastMessage, lastMessageList, index, setLastTime, lastTimeList }) {
+function ConvBoard({ value, connection, userName, name, setLastMessage, lastMessageList, index, setLastTime, lastTimeList }) {
     let name1 = name + "1";
     let name2 = name + "2";
 
-
-
     const [initMessageList, setMessageList] = useState([]);
     const [lastMessage, setLastMessage1] = useState();
+
+    useEffect(() => {
+        async function fetchData() {
+            const resp = await fetch('http://localhost:5287/api/contacts/' + userName + '/' + name + '/messages');
+            const data = await resp.json();
+
+            for (var i in data) {
+                if (data[i].sent === true) {
+                    is_me = "me";
+                } else {
+                    is_me = "friend"
+                }
+                const obj = { "text": data[i].content, "me_or_friend": is_me, "type": "text", "thisTime": data[i].created };
+                result.push(obj);
+            }
+            setLastMessage1(data[data.length - 1].content);
+            setMessageList(result);
+        } fetchData();
+    }, [value, setMessageList]);
 
 
     let newText = useRef(null);
@@ -39,49 +53,8 @@ function ConvBoard({ connection, userName, name, setLastMessage, lastMessageList
 
     }
 
-
     var result = [];
     var is_me;
-    useEffect(async () => {
-        const resp = await fetch('http://localhost:5287/api/contacts/' + userName + '/' + name + '/messages');
-        const data = await resp.json();
-
-        console.log(data);
-        for (var i in data) {
-            if (data[i].sent === true) {
-                is_me = "me";
-            } else {
-                is_me = "friend"
-            }
-            const obj = { "text": data[i].content, "me_or_friend": is_me, "type": "text", "thisTime": saveData[i].created };
-            console.log(obj);
-            result.push(obj);
-        }
-        setLastMessage1(data[data.length - 1].content);
-        setMessageList(result);
-    }, []);
-
-    connection.on("ReceiveMessage", async () => {
-        var saveData;
-        var array = [];
-        await fetch('http://localhost:5287/api/contacts/' + userName + '/' + name + '/messages')
-        .then(response => response.json()).then(data => saveData = data);
-
-        for (var i in saveData) {
-            if (saveData[i].sent === true) {
-                is_me = "me";
-            } else {
-                is_me = "friend"
-            }
-            const obj = { "text": saveData[i].content, "me_or_friend": is_me, "type": "text", "thisTime": saveData[i].created };
-            console.log(obj);
-            array.push(obj);
-        }
-        setLastMessage1(saveData[saveData.length - 1].content);
-        setMessageList(array);
-    }
-    )
-
 
     const messageList = initMessageList.map((now, key) => {
         return <Message text={now.text} key={key} type={now.type} imgSrc={now.imgSrc} me_or_friend={now.me_or_friend} thisTime={now.thisTime} />
@@ -110,7 +83,6 @@ function ConvBoard({ connection, userName, name, setLastMessage, lastMessageList
             await connection.invoke("AddedMessage");
             newText.current.value = ""
         }
-        console.log(initMessageList);
     }
 
     const onKeyFunc = function onKeyEnter(e) {

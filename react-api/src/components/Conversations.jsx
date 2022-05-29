@@ -10,11 +10,15 @@ import anon from "./anon.png";
 import { HubConnectionBuilder, LogLevel } from '@microsoft/signalr';
 
 function Conversations() {
+    
     const[connection, SetConnection] = useState();
     const [initialNames, setinitialNames] = useState([]);
     const [initiNames, setInitiNames] = useState([]);
     const [lastMessageList, setLastMessageList] = useState([]);
     const [lastTimeList, setLastTimeList] = useState([]);
+    const [value, setValue] = useState();
+
+    var count = 0;
 
     const connectToServer = async () => {
         try{
@@ -27,7 +31,8 @@ function Conversations() {
                     console.log(mess);
                 }
             )
-            connection.on("ReciveContact", async () => {
+            connection.on("ReciveContact", 
+                async () => {
                 var saveData;
                 console.log("received contact");
                 await fetch('http://localhost:5287/api/contacts').then(response => response.json())
@@ -39,12 +44,14 @@ function Conversations() {
                         names.push(obj);
                     }
                 }
-                console.log(names);
                 setinitialNames(names);
                 setInitiNames(names);
-                console.log(initialNames);
             }
             )
+            connection.on("ReceiveMessage", () => {
+                ++count;
+                setValue(count);
+            })
             await connection.start();
             await connection.invoke("Join");
             SetConnection(connection);
@@ -68,9 +75,9 @@ function Conversations() {
 
     var result = [];
 
-    
     //when we connect, the server gives us 
-    useEffect(async () => {
+    useEffect(() => {
+        async function fetchData() {
         const resp = await fetch('http://localhost:5287/api/contacts/');
         const data = await resp.json();
         for (var i in data) {
@@ -79,28 +86,31 @@ function Conversations() {
                 result.push(obj);
             }
         }
-        console.log(result);
         setinitialNames(result);
         setInitiNames(result);
         connectToServer();
-    }, []);
+    } 
+    fetchData();},
+    [setinitialNames]);
 
-
-
-    const listNames = initiNames.map((now, key) => {
+    var listNames = [];
+    if((Array.isArray(initiNames) && initiNames.length)){
+    listNames = initiNames.map((now, key) => {
         return <NaviMe username={username} friend={now.name} key={key} />
-    });
-    const listBoards = initialNames.map((now, key) => {
-        return <ConvBoard connection={connection} userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
+    });}
+    var listBoards = [];
+    if((Array.isArray(initialNames) && initialNames.length)){
+        listBoards = initialNames.map((now, key) => {
+        return <ConvBoard value={value} connection={connection} userName={username} name={now.name} key={key} setLastMessage={setLastMessageList} lastMessageList={lastMessageList} index={key}
             setLastTime={setLastTimeList} lastTimeList={lastTimeList} />
-    });
+    });}
 
     async function invitation(username, contact) {
         const response =
             await fetch('http://localhost:5287/api/invitations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ "From": username, "To": contact, "Server": 'http://localhost:5287' })
+                body: JSON.stringify({ "From": username, "To": contact, "Server": 'localhost:5287' })
             });
     }
 
@@ -126,7 +136,7 @@ function Conversations() {
         }
         if (newContact !== "" && newContact != null && isOK) {
             postNewContact(newContact, newContactServer);
-            invitation(username, newContact, 'http://localhost:5287');
+            invitation(username, newContact);
             setinitialNames([...initialNames, {
                 name: newContact,
                 key: initialNames.length

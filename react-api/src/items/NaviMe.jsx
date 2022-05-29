@@ -8,7 +8,8 @@ function NaviMe({ username, friend }) {
 
     const [lastMessage, setLastMessage] = useState();
     const [lastTime, setLastTime] = useState();
-    useEffect(async () => {
+
+    const getResponse = async () => {
         const resp = await fetch('http://localhost:5287/api/contacts/' + username + '/' + friend + '/messages');
         const data = await resp.json();
         setLastTime(data[data.length - 1].created);
@@ -16,7 +17,11 @@ function NaviMe({ username, friend }) {
             setLastMessage(data[data.length - 1].content.substr(1, 17) + "...");
         } else
             setLastMessage(data[data.length - 1].content);
-    }, []);
+    }
+
+    useEffect(() => { 
+        getResponse();
+      });
 
     return (
         <Nav.Item className="surr" style={{ "height": "87px", "border": "solid", "border-radius": "5px", "border-width": "1px" }}>
